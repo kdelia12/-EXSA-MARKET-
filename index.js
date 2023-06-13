@@ -13,7 +13,9 @@ const client = new Client({
     // ...
   ],
 });
+
 app.use(cors({ origin: '*' }));
+
 app.get('/search', async (req, res) => {
   try {
     const { type, keyword } = req.query;
@@ -95,8 +97,8 @@ app.get('/search', async (req, res) => {
           type,
           quantity,
           collateral,
-        link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
-      };
+          link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
+        };
     });
     return res.json({ results });
   } catch (err) {
@@ -139,8 +141,12 @@ app.get('/lastsales', async (req, res) => {
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}`);
-  app.listen(3000, () => {
-    console.log('API server listening on port 3000');
+  const port = process.env.PORT || 3000;
+  const server = app.listen(port, () => {
+    console.log(`API server listening on port ${port}`);
+  });
+  server.on('listening', () => {
+    console.log(`Server running at: http://${server.address().address}:${server.address().port}`);
   });
 });
 
