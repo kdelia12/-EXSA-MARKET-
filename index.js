@@ -5,6 +5,7 @@ require('dotenv').config();
 const token = process.env.TOKEN;
 const channelbuy = process.env.channelbuy;
 const channelsell = process.env.channelsell;
+const channellastsales = process.env.channellastsales;
 const { Client, GatewayIntentBits } = require('discord.js');
 const client = new Client({
   intents: [
@@ -95,6 +96,38 @@ app.get('/search', async (req, res) => {
           quantity,
           collateral,
         link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
+      };
+    });
+    return res.json({ results });
+  } catch (err) {
+    console.error(`Error: ${err}`);
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+app.get('/lastsales', async (req, res) => {
+  try {
+    const channelId = channellastsales; // Replace with the ID of your channel
+    let beforeMessageId = null;
+    const channel = await client.channels.fetch(channelId);
+    if (!beforeMessageId) {
+      const latestMessage = await channel.messages.fetch({ limit: 1 });
+      beforeMessageId = latestMessage.first().id;
+    }
+    let messages = await channel.messages.fetch({ before: beforeMessageId });
+    const results = messages.map((message) => {
+      const embed = message.embeds[0];
+      const item = embed.title.split(',')[0].replace(/<.*>/g, '').trim();
+      const price = embed.fields[0].value;
+      const specific = embed.fields[1].value;
+      const quantity = embed.fields[2].value;
+      const messageLink = `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`;
+        return {
+          item,
+          price,
+          specific,
+          quantity,
+          messageLink,
       };
     });
     return res.json({ results });
