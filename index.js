@@ -76,8 +76,8 @@ app.get('/search', async (req, res) => {
         const fields = embed.description.split('\n').map((line) => line.trim());
         const itemField = fields.find((field) => field.startsWith('**Item:'));
         const item = itemField ? itemField.slice('Item: ** *'.length).trim() : null;
-        const priceField = fields.find((field) => field.startsWith('**Price: '));
-        const price = priceField ? priceField.slice('Price: ** *'.length).trim() : null;
+        const priceField = fields.find((field) => field.startsWith('**Price for each: '));
+        const price = priceField ? priceField.slice('Price for each: ** *'.length).trim() : null;
         const paymentField = fields.find((field) => field.startsWith('**Payment: '));
         const payment = paymentField ? paymentField.slice('Payment: ** *'.length).trim() : null;
         const specificField = fields.find((field) => field.startsWith('**Specific: '));
